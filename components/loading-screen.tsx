@@ -248,7 +248,7 @@ export function LoadingScreen() {
           className="text-sm font-medium tracking-wide"
           style={{ color: "var(--muted-foreground)" }}
         >
-          הנחה מושכלת · טוען נתוני הגרלות
+          מושך נתונים מהשטח…
         </p>
         <div className="flex items-center gap-2">
           {[0, 1, 2].map((i) => (

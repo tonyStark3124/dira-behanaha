@@ -60,10 +60,8 @@ export default function CookiesPage() {
       <div className="h-px" style={{ backgroundColor: "var(--border)" }} />
 
       <p className="text-sm leading-relaxed" style={{ color: "var(--muted-foreground)" }}>
-        מסמך זה מסביר כיצד <strong style={{ color: "var(--foreground)" }}>הנחה מושכלת</strong> משתמש
-        בעוגיות (Cookies) ובמנגנוני אחסון מקומיים דומים. אתר זה עושה שימוש מינימלי בלבד
-        ב<strong style={{ color: "var(--foreground)" }}>עוגיות טכניות הכרחיות</strong> ואינו משתמש
-        בעוגיות שיווקיות, פרסומיות או מעקב של צד-שלישי.
+        קצר ולעניין: יש כאן עוגייה אחת שזוכרת אם בחרתם מצב כהה או בהיר. זהו.
+        אין פרסומות, אין מעקב, אין צד-שלישי.
       </p>
 
       <section className="space-y-3">

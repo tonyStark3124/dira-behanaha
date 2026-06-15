@@ -57,10 +57,9 @@ export default function AccessibilityPage() {
 
       <Section title="מחויבותנו לנגישות">
         <p>
-          אנו ב<strong style={{ color: "var(--foreground)" }}>הנחה מושכלת</strong> מחויבים להנגשת
-          השירות לכלל המשתמשים, לרבות אנשים עם מוגבלות. אנו פועלים בהתאם לחוק שוויון זכויות
-          לאנשים עם מוגבלות, תשנ״ח-1998, ותקנות שוויון זכויות לאנשים עם מוגבלות (התאמות
-          נגישות לשירות), תשע״ג-2013.
+          <strong style={{ color: "var(--foreground)" }}>הנחה מושכלת</strong> הוא פרויקט חינמי שנועד לעזור לכולם — כולל אנשים עם מוגבלות.
+          אנו פועלים לפי חוק שוויון זכויות לאנשים עם מוגבלות, תשנ״ח-1998,
+          ותקנות שוויון זכויות לאנשים עם מוגבלות (התאמות נגישות לשירות), תשע״ג-2013.
         </p>
         <p>
           רמת ההנגשה המוצהרת: <strong style={{ color: "var(--foreground)" }}>WCAG 2.1 — רמה AA</strong>.
@@ -96,7 +95,7 @@ export default function AccessibilityPage() {
 
       <Section title="יצירת קשר בנושא נגישות">
         <p>
-          נתקלתם בבעיית נגישות? אנו מתחייבים לטפל בפניות נגישות בתוך <strong style={{ color: "var(--foreground)" }}>5 ימי עסקים</strong>.
+          נתקלתם בבעיה? כתבו לנו — נטפל בתוך <strong style={{ color: "var(--foreground)" }}>5 ימי עסקים</strong>.
         </p>
         <div
           className="mt-4 flex items-center gap-3 rounded-2xl p-4"

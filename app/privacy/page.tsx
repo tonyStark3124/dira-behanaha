@@ -47,9 +47,8 @@ export default function PrivacyPage() {
       <div className="h-px" style={{ backgroundColor: "var(--border)" }} />
 
       <p className="text-sm leading-relaxed" style={{ color: "var(--muted-foreground)" }}>
-        מדיניות זו מסבירה כיצד <strong style={{ color: "var(--foreground)" }}>הנחה מושכלת</strong> אוסף,
-        משתמש ומגן על המידע שלכם, בהתאם לחוק הגנת הפרטיות, תשמ״א-1981
-        ותקנותיו, וכן לתקנות הגנת הפרטיות (אבטחת מידע), תשע״ז-2017.
+        בגדול — לא אוספים כלום. אין הרשמה, אין מייל, אין עוגיות מסחריות.
+        הנה הפרטים המלאים לפי חוק הגנת הפרטיות, תשמ״א-1981:
       </p>
 
       <Section num={1} title="מידע שאנו אוספים">

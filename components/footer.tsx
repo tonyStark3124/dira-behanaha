@@ -37,8 +37,8 @@ export function Footer() {
               className="text-xs leading-relaxed"
               style={{ color: "var(--muted-foreground)" }}
             >
-              מנוע ניתוח הגרלות דיור. הנתונים מוצגים לצורך מידע כללי בלבד
-              ואינם מהווים ייעוץ פיננסי, משפטי או השקעתי מכל סוג.
+              פרויקט חינמי שעוזר להחליט לאן להגיש בקשה לדיור.
+              הנתונים ממשרד הבינוי והשיכון — בלי ייעוץ, בלי פרסומות.
             </p>
             <a
               href="mailto:tuviahefets@gmail.com"
@@ -134,8 +134,7 @@ export function Footer() {
             className="text-[11px]"
             style={{ color: "var(--muted-foreground)", opacity: 0.6 }}
           >
-            הנתונים מבוססים על פרסומי משרד הבינוי והשיכון ואינם מתעדכנים בזמן
-            אמת
+            הנתונים מגיעים ממשרד הבינוי והשיכון — ייתכן שאינם מעודכנים לחלוטין
           </p>
         </div>
       </div>

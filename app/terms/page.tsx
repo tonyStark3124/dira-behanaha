@@ -47,8 +47,8 @@ export default function TermsPage() {
       <div className="h-px" style={{ backgroundColor: "var(--border)" }} />
 
       <p className="text-sm leading-relaxed" style={{ color: "var(--muted-foreground)" }}>
-        ברוכים הבאים לאתר <strong style={{ color: "var(--foreground)" }}>הנחה מושכלת</strong> — מנוע ניתוח הגרלות דיור.
-        השימוש באתר מהווה הסכמה לתנאים המפורטים להלן. אנא קראו בעיון לפני השימוש.
+        <strong style={{ color: "var(--foreground)" }}>הנחה מושכלת</strong> הוא פרויקט חינמי לגמרי — בלי מסחר, בלי פרסומות.
+        יש כמה כללים פשוטים שכדאי לדעת. קצר ולעניין:
       </p>
 
       <Section num={1} title="מטרת השירות">

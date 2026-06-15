@@ -130,7 +130,7 @@ function SidebarInner({ onClose }: { onClose?: () => void }) {
               className="text-[10px] leading-tight"
               style={{ color: "var(--muted-foreground)" }}
             >
-              הדרך לדיור המשתלם
+              כי גם מזל מתחיל עם מידע
             </div>
           </div>
         </div>

@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDashboard } from "@/components/providers/dashboard-provider";
 
-// ── Pre-determined star positions (no Math.random — avoids hydration mismatch) ──
+// ── Stars (dark mode only) — fixed positions, no Math.random ──────────────
 const STARS = [
   { x: "6%",  y: "14%", r: 1.2, o: 0.55, d: "0s"    },
   { x: "14%", y: "30%", r: 0.9, o: 0.40, d: "0.4s"  },
@@ -18,8 +18,9 @@ const STARS = [
   { x: "47%", y: "32%", r: 1.2, o: 0.40, d: "0.7s"  },
 ] as const;
 
-// ── City skyline buildings: x, width, height (from bottom), antenna? ──
+// ── City skyline buildings ─────────────────────────────────────────────────
 interface Bldg { x: number; w: number; h: number; a?: boolean }
+
 const BLDGS: Bldg[] = [
   { x: 5,    w: 38,  h: 38 },
   { x: 50,   w: 55,  h: 68 },
@@ -50,44 +51,53 @@ const BLDGS: Bldg[] = [
 
 const CVS = 130; // SVG canvas height (px)
 
-function SkylineBuilding({ x, w, h, a }: Bldg) {
+function SkylineBuilding({ x, w, h, a, isDark }: Bldg & { isDark: boolean }) {
   const topY    = CVS - h;
   const winW    = 4, winH = 5, colGap = 7, rowGap = 9;
   const numCols = Math.max(1, Math.floor((w - 12) / (winW + colGap)));
   const numRows = Math.min(Math.max(0, Math.floor((h - 20) / (winH + rowGap))), 7);
   const total   = numRows * numCols;
 
+  const strokeColor = isDark ? "rgba(255,255,255,0.48)" : "rgba(14,35,75,0.65)";
+  const fillColor   = isDark ? "rgba(255,255,255,0.03)" : "rgba(14,35,75,0.08)";
+  const antColor    = isDark ? "rgba(255,255,255,0.45)" : "rgba(14,35,75,0.55)";
+
   return (
     <g>
-      {/* Building body */}
       <rect
         x={x} y={topY} width={w} height={h}
-        fill="rgba(255,255,255,0.03)"
-        stroke="rgba(255,255,255,0.48)"
+        fill={fillColor}
+        stroke={strokeColor}
         strokeWidth="1"
       />
-      {/* Windows — deterministic brightness pattern */}
       {Array.from({ length: total }, (_, idx) => {
         const r  = Math.floor(idx / numCols);
         const c  = idx % numCols;
         const ph = (r + c) % 3;
-        const op = ph === 0 ? 0.55 : ph === 1 ? 0.18 : 0.07;
+        /* Dark: white windows · Light: glass (sky reflection) + dark walls */
+        const winFill = isDark
+          ? `rgba(255,255,255,${ph === 0 ? 0.55 : ph === 1 ? 0.18 : 0.07})`
+          : ph === 0
+            ? "rgba(100,150,215,0.50)"  // glass reflecting sky
+            : ph === 1
+            ? "rgba(14,35,75,0.22)"     // dim interior
+            : "rgba(14,35,75,0.08)";    // dark interior
+
         return (
           <rect
             key={idx}
             x={x + 6 + c * (winW + colGap)}
             y={topY + 12 + r * (winH + rowGap)}
             width={winW} height={winH}
-            fill={`rgba(255,255,255,${op})`}
+            fill={winFill}
           />
         );
       })}
-      {/* Antenna */}
       {a && (
         <line
           x1={x + w / 2} y1={topY}
           x2={x + w / 2} y2={topY - 14}
-          stroke="rgba(255,255,255,0.45)"
+          stroke={antColor}
           strokeWidth="1"
         />
       )}
@@ -98,12 +108,17 @@ function SkylineBuilding({ x, w, h, a }: Bldg) {
 function StatChip({
   value,
   label,
-  accent,
+  isDark,
+  accentDark,
+  accentLight,
 }: {
   value: string | number;
   label: string;
-  accent: string;
+  isDark: boolean;
+  accentDark: string;
+  accentLight: string;
 }) {
+  const accent = isDark ? accentDark : accentLight;
   return (
     <div
       style={{
@@ -112,10 +127,15 @@ function StatChip({
         gap: "0.35rem",
         padding: "0.275rem 0.7rem",
         borderRadius: 9999,
-        background: "oklch(0.10 0.05 260 / 0.55)",
-        border: `1px solid ${accent}44`,
+        background: isDark
+          ? "oklch(0.10 0.05 260 / 0.55)"
+          : "rgba(255,255,255,0.48)",
+        border: isDark
+          ? `1px solid ${accentDark}44`
+          : "1px solid rgba(14,35,75,0.20)",
         backdropFilter: "blur(10px)",
         WebkitBackdropFilter: "blur(10px)",
+        transition: "background 0.35s ease, border-color 0.35s ease",
       }}
     >
       <span
@@ -124,11 +144,18 @@ function StatChip({
           fontWeight: 700,
           color: accent,
           fontVariantNumeric: "tabular-nums",
+          transition: "color 0.35s ease",
         }}
       >
         {value}
       </span>
-      <span style={{ fontSize: "0.625rem", color: "oklch(0.63 0.04 240)" }}>
+      <span
+        style={{
+          fontSize: "0.625rem",
+          color: isDark ? "oklch(0.63 0.04 240)" : "oklch(0.28 0.06 240)",
+          transition: "color 0.35s ease",
+        }}
+      >
         {label}
       </span>
     </div>
@@ -138,22 +165,38 @@ function StatChip({
 export function HeroBanner() {
   const { computation, meta } = useDashboard();
 
-  const starsRef   = useRef<HTMLDivElement>(null);
-  const moonRef    = useRef<HTMLDivElement>(null);
-  const skylineRef = useRef<SVGSVGElement>(null);
+  /*
+   * Track the .dark class on <html> reactively.
+   * Default = true (dark) to match the anti-FOUC script's default behaviour.
+   * useEffect syncs to the real value immediately after hydration.
+   */
+  const [isDark, setIsDark] = useState(true);
+
+  const starsRef     = useRef<HTMLDivElement>(null);
+  const celestialRef = useRef<HTMLDivElement>(null); // moon (dark) or sun (light)
+  const skylineRef   = useRef<SVGSVGElement>(null);
+
+  useEffect(() => {
+    const check = () =>
+      setIsDark(document.documentElement.classList.contains("dark"));
+    check();
+    const obs = new MutationObserver(check);
+    obs.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+    return () => obs.disconnect();
+  }, []);
 
   useEffect(() => {
     const onScroll = () => {
       const y = window.scrollY;
-      if (starsRef.current) {
+      if (starsRef.current)
         starsRef.current.style.transform = `translateY(${-(y * 0.28).toFixed(1)}px)`;
-      }
-      if (moonRef.current) {
-        moonRef.current.style.transform = `translateY(${-(y * 0.13).toFixed(1)}px)`;
-      }
-      if (skylineRef.current) {
+      if (celestialRef.current)
+        celestialRef.current.style.transform = `translateY(${-(y * 0.13).toFixed(1)}px)`;
+      if (skylineRef.current)
         skylineRef.current.style.transform = `translateY(${(y * 0.06).toFixed(1)}px)`;
-      }
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -163,44 +206,67 @@ export function HeroBanner() {
   const lotteryCount = computation.totalAfterFilter;
   const topCity      = computation.kpis.optimalCity?.city ?? null;
 
+  /* ── Theme-aware values ─────────────────────────────────── */
+  const bgGradient = isDark
+    ? `
+        radial-gradient(ellipse 55% 70% at 80% 50%,
+          oklch(0.16 0.14 275 / 0.45), transparent 62%),
+        radial-gradient(ellipse 45% 60% at 18% 38%,
+          oklch(0.12 0.10 228 / 0.30), transparent 58%),
+        linear-gradient(135deg,
+          oklch(0.09 0.08 265) 0%,
+          oklch(0.07 0.06 252) 55%,
+          oklch(0.05 0.04 238) 100%)
+      `
+    : `linear-gradient(180deg,
+        oklch(0.48 0.20 232) 0%,
+        oklch(0.62 0.18 224) 35%,
+        oklch(0.76 0.13 216) 68%,
+        oklch(0.84 0.09 210) 100%)`;
+
+  const brandColor   = isDark ? "white" : "oklch(0.10 0.09 238)";
+  const taglineColor = isDark ? "oklch(0.70 0.06 240)" : "oklch(0.20 0.08 238)";
+
+  /* Sun glow layers */
+  const sunShadow = `
+    0 0 0  7px oklch(0.90 0.20 88 / 0.24),
+    0 0 0 16px oklch(0.90 0.20 88 / 0.11),
+    0 0 38px   oklch(0.88 0.18 86 / 0.60),
+    0 0 80px   oklch(0.88 0.18 86 / 0.32)
+  `;
+  const moonShadow = "0 0 10px rgba(255,255,255,0.10), 0 0 26px rgba(255,255,255,0.05)";
+
   return (
     <div
-      /* break out of <main> padding to span full content width */
       className="-mx-4 -mt-6 mb-6 sm:-mx-6 sm:-mt-8 sm:mb-8"
       style={{
         position: "relative",
         overflow: "hidden",
-        /* 30% shorter than before (was clamp 200–290px) */
         minHeight: "clamp(140px, 20vw, 202px)",
-        background: `
-          radial-gradient(ellipse 55% 70% at 80% 50%,
-            oklch(0.16 0.14 275 / 0.45), transparent 62%),
-          radial-gradient(ellipse 45% 60% at 18% 38%,
-            oklch(0.12 0.10 228 / 0.30), transparent 58%),
-          linear-gradient(135deg,
-            oklch(0.09 0.08 265) 0%,
-            oklch(0.07 0.06 252) 55%,
-            oklch(0.05 0.04 238) 100%)
-        `,
+        background: bgGradient,
+        transition: "background 0.4s ease",
       }}
     >
-      {/* ── Stars layer (parallax: fastest) ──────────────── */}
+      {/* ── Stars — fade out in light mode ────────────────── */}
       <div
         ref={starsRef}
         aria-hidden
-        style={{ position: "absolute", inset: 0, willChange: "transform" }}
+        style={{
+          position: "absolute", inset: 0,
+          willChange: "transform",
+          opacity: isDark ? 1 : 0,
+          transition: "opacity 0.4s ease",
+          pointerEvents: "none",
+        }}
       >
         {STARS.map((s, i) => (
           <span
             key={i}
             style={{
               position: "absolute",
-              left: s.x,
-              top: s.y,
-              width: `${s.r * 2}px`,
-              height: `${s.r * 2}px`,
-              borderRadius: "50%",
-              background: "white",
+              left: s.x, top: s.y,
+              width: `${s.r * 2}px`, height: `${s.r * 2}px`,
+              borderRadius: "50%", background: "white",
               opacity: s.o,
               animation: `star-twinkle 2.8s ease-in-out ${s.d} infinite alternate`,
             }}
@@ -208,38 +274,48 @@ export function HeroBanner() {
         ))}
       </div>
 
-      {/* ── Moon (parallax: slow) ────────────────────────── */}
+      {/* ── Celestial body: Moon (dark) ↔ Sun (light) ───────── */}
       <div
-        ref={moonRef}
+        ref={celestialRef}
         aria-hidden
         style={{
           position: "absolute",
-          top: "13%",
-          right: "9%",
-          width: 26,
-          height: 26,
+          top: "10%", right: "9%",
+          width:  isDark ? 26 : 34,
+          height: isDark ? 26 : 34,
           borderRadius: "50%",
-          border: "1.5px solid rgba(255,255,255,0.58)",
-          background: "rgba(255,255,255,0.025)",
-          boxShadow:
-            "0 0 10px rgba(255,255,255,0.10), 0 0 26px rgba(255,255,255,0.05)",
+          background: isDark ? "rgba(255,255,255,0.025)" : "oklch(0.91 0.21 88)",
+          border: isDark ? "1.5px solid rgba(255,255,255,0.58)" : "none",
+          boxShadow: isDark ? moonShadow : sunShadow,
           willChange: "transform",
+          transition: "all 0.4s ease",
         }}
       />
 
-      {/* ── Text content (above skyline, relative z-index) ── */}
+      {/* ── Ambient glow (dark mode only) ────────────────────── */}
+      {isDark && (
+        <div
+          aria-hidden
+          style={{
+            position: "absolute",
+            insetInlineEnd: "4%", top: "50%",
+            transform: "translateY(-50%)",
+            width: 320, height: 320, borderRadius: "50%",
+            background: "oklch(0.52 0.22 218 / 0.09)",
+            filter: "blur(80px)",
+            pointerEvents: "none",
+          }}
+        />
+      )}
+
+      {/* ── Text content ──────────────────────────────────────── */}
       <div
         style={{
-          position: "relative",
-          zIndex: 1,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          gap: "0.55rem",
-          padding:
-            "clamp(0.875rem, 2.5vw, 1.75rem) clamp(1rem, 3vw, 2rem)",
+          position: "relative", zIndex: 1,
+          display: "flex", flexDirection: "column",
+          justifyContent: "center", gap: "0.55rem",
+          padding: "clamp(0.875rem, 2.5vw, 1.75rem) clamp(1rem, 3vw, 2rem)",
           paddingBottom: 0,
-          /* ensure text stays above the skyline */
           minHeight: "clamp(80px, 10vw, 110px)",
         }}
       >
@@ -247,11 +323,11 @@ export function HeroBanner() {
           <div
             style={{
               fontSize: "clamp(1.55rem, 4.5vw, 2.75rem)",
-              fontWeight: 900,
-              lineHeight: 1.0,
-              color: "white",
+              fontWeight: 900, lineHeight: 1.0,
               letterSpacing: "-0.02em",
-              textShadow: "0 0 50px oklch(0.52 0.22 218 / 0.42)",
+              color: brandColor,
+              textShadow: isDark ? "0 0 50px oklch(0.52 0.22 218 / 0.42)" : "none",
+              transition: "color 0.4s ease, text-shadow 0.4s ease",
             }}
           >
             הנחה מושכלת
@@ -259,77 +335,66 @@ export function HeroBanner() {
           <p
             style={{
               fontSize: "clamp(0.68rem, 1.5vw, 0.84rem)",
-              color: "oklch(0.70 0.06 240)",
+              color: taglineColor,
               marginTop: "0.18rem",
               lineHeight: 1.4,
+              transition: "color 0.4s ease",
             }}
           >
-            ניתוח חכם של הגרלות דיור&ensp;·&ensp;מצא את העסקה הטובה ביותר
+            כי לא כל הגרלה שווה אותו דבר&ensp;·&ensp;חינמי לגמרי, בלי פרסומות
           </p>
         </div>
 
-        {/* Stat chips — hidden on very small screens to save space */}
         {meta && (
-          <div
-            className="hidden xs:flex sm:flex"
-            style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}
-          >
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
             <StatChip
-              value={cityCount}
-              label="ערים"
-              accent="oklch(0.68 0.17 148)"
+              value={cityCount} label="ערים"
+              isDark={isDark}
+              accentDark="oklch(0.68 0.17 148)"
+              accentLight="oklch(0.30 0.16 148)"
             />
             <StatChip
-              value={lotteryCount}
-              label="הגרלות"
-              accent="oklch(0.68 0.17 218)"
+              value={lotteryCount} label="הגרלות"
+              isDark={isDark}
+              accentDark="oklch(0.68 0.17 218)"
+              accentLight="oklch(0.28 0.16 218)"
             />
             {topCity && (
               <StatChip
-                value={topCity}
-                label="עיר מובילה"
-                accent="oklch(0.78 0.14 75)"
+                value={topCity} label="עיר מובילה"
+                isDark={isDark}
+                accentDark="oklch(0.78 0.14 75)"
+                accentLight="oklch(0.38 0.16 75)"
               />
             )}
           </div>
         )}
       </div>
 
-      {/* ── City skyline illustration (parallax: slowest) ── */}
+      {/* ── City skyline (parallax: slowest) ──────────────────── */}
       <svg
         ref={skylineRef}
         aria-hidden
         viewBox={`0 0 1440 ${CVS}`}
         preserveAspectRatio="none"
         style={{
-          position: "absolute",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          width: "100%",
-          height: "clamp(65px, 12vw, 110px)",
-          willChange: "transform",
-          pointerEvents: "none",
+          position: "absolute", bottom: 0, left: 0, right: 0,
+          width: "100%", height: "clamp(65px, 12vw, 110px)",
+          willChange: "transform", pointerEvents: "none",
         }}
       >
         {BLDGS.map((b) => (
-          <SkylineBuilding key={b.x} {...b} />
+          <SkylineBuilding key={b.x} {...b} isDark={isDark} />
         ))}
       </svg>
 
-      {/* ── Bottom fade to page background ───────────────── */}
+      {/* ── Bottom fade to page background ────────────────────── */}
       <div
         aria-hidden
         style={{
-          position: "absolute",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: 44,
-          background:
-            "linear-gradient(to bottom, transparent, var(--background))",
-          pointerEvents: "none",
-          zIndex: 2,
+          position: "absolute", bottom: 0, left: 0, right: 0, height: 44,
+          background: "linear-gradient(to bottom, transparent, var(--background))",
+          pointerEvents: "none", zIndex: 2,
         }}
       />
     </div>
