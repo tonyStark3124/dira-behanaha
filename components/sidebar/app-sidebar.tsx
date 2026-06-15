@@ -29,38 +29,45 @@ const NAV_LINKS = [
   { href: "/cookies",       label: "מדיניות עוגיות",    icon: Cookie          },
 ];
 
-/** Compact spaceship SVG matching the loading-screen aesthetic, 34 px */
-function ShipLogo() {
+/** Compact logo: lottery drum with a building silhouette, 34×34 px */
+function BrandLogo() {
   return (
-    <svg width="34" height="34" viewBox="-17 -22 34 38" aria-hidden>
-      <ellipse cx="0" cy="17" rx="5" ry="2.8"
-        fill="var(--chart-2)" opacity="0.65"
-        style={{ filter: "blur(3px)" }}
+    <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden>
+      {/* Building */}
+      <rect x="4" y="14" width="11" height="16" rx="1"
+        fill="var(--card)" stroke="var(--chart-1)" strokeWidth="1"
       />
-      <path d="M -5,-3 L -18,4 L -4,6 Z" fill="oklch(0.14 0.06 255)" />
-      <path d="M 5,-3 L 18,4 L 4,6 Z"  fill="oklch(0.14 0.06 255)" />
-      <path
-        d="M 0,-18 L -5,-3 L -4,8 L 0,11 L 4,8 L 5,-3 Z"
-        fill="oklch(0.19 0.07 258)"
-        stroke="var(--chart-1)"
-        strokeWidth="0.7"
+      <rect x="4" y="14" width="11" height="3" rx="1"
+        fill="color-mix(in oklch, var(--chart-1) 35%, transparent)"
       />
-      <circle cx="-22" cy="4" r="1.4" fill="var(--chart-2)" opacity="0.8" />
-      <circle cx="22"  cy="4" r="1.4" fill="var(--chart-2)" opacity="0.8" />
-      <circle cx="0" cy="-10" r="4.8"
-        fill="oklch(0.52 0.22 218)"
-        stroke="var(--chart-1)"
-        strokeWidth="0.5"
+      {/* Windows */}
+      <rect x="6.5" y="19" width="2.5" height="2" rx="0.4" fill="oklch(0.88 0.16 85)" />
+      <rect x="11"  y="19" width="2.5" height="2" rx="0.4" fill="oklch(0.88 0.16 85)" opacity="0.5" />
+      <rect x="6.5" y="23" width="2.5" height="2" rx="0.4" fill="oklch(0.88 0.16 85)" opacity="0.7" />
+      <rect x="11"  y="23" width="2.5" height="2" rx="0.4" fill="oklch(0.88 0.16 85)" />
+      {/* Crane mast */}
+      <line x1="15" y1="30" x2="15" y2="9" stroke="var(--muted-foreground)" strokeWidth="1.2" strokeLinecap="round" opacity="0.7" />
+      {/* Crane jib */}
+      <line x1="10" y1="9" x2="22" y2="9" stroke="var(--muted-foreground)" strokeWidth="1" strokeLinecap="round" opacity="0.7" />
+      {/* Crane wire + box */}
+      <line x1="21" y1="9" x2="21" y2="16" stroke="var(--muted-foreground)" strokeWidth="0.8" opacity="0.6" />
+      <rect x="19" y="16" width="4" height="3" rx="0.8"
+        fill="var(--muted)" stroke="var(--muted-foreground)" strokeWidth="0.7" opacity="0.7"
       />
-      <circle cx="0" cy="-10" r="4.8"
-        fill="var(--chart-2)" opacity="0.28"
-        style={{ filter: "blur(2px)" }}
+      {/* Lottery drum (right side) */}
+      <ellipse cx="27" cy="20" rx="6" ry="5"
+        fill="color-mix(in oklch, var(--primary) 10%, transparent)"
+        stroke="var(--chart-1)" strokeWidth="1.2"
       />
-      <ellipse cx="-1.5" cy="-12" rx="2" ry="1.3" fill="rgba(255,255,255,0.40)" />
-      <line x1="0" y1="-18" x2="0" y2="-22"
-        stroke="var(--chart-1)" strokeWidth="0.7" opacity="0.65"
+      {/* Ball inside drum */}
+      <circle cx="27" cy="20" r="3"
+        fill="oklch(0.78 0.19 80)"
+        stroke="rgba(255,255,255,0.4)" strokeWidth="0.7"
       />
-      <circle cx="0" cy="-23" r="1.1" fill="var(--chart-2)" />
+      {/* Ground line */}
+      <line x1="2" y1="30" x2="32" y2="30"
+        stroke="var(--border)" strokeWidth="1" strokeLinecap="round"
+      />
     </svg>
   );
 }
@@ -123,7 +130,7 @@ function SidebarInner({ onClose }: { onClose?: () => void }) {
         />
 
         <div className="flex items-center gap-2.5">
-          <ShipLogo />
+          <BrandLogo />
           <div>
             <div className="text-[12px] font-bold leading-tight">הנחה מושכלת</div>
             <div
