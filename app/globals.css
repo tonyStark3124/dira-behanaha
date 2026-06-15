@@ -1,26 +1,309 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * ─── LUXURY SKEUOMORPHIC DESIGN SYSTEM ──────────────────────────────────────
+ *
+ * Dark:  charcoal #0B0C0E canvas · tech-grey #16171B elevated surfaces
+ * Light: cool off-white canvas · pure white cards
+ * Accent: single muted violet — information, never decoration
+ * Motions: duration-300 ease-out across all interactions
+ */
+
+/* ─── LIGHT ──────────────────────────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --radius: 1rem;   /* 16px base — hyper-soft corners everywhere */
+
+  --background:          oklch(0.965 0.006 252);
+  --foreground:          oklch(0.16 0.018 258);
+
+  --card:                oklch(1 0 0);
+  --card-foreground:     oklch(0.16 0.018 258);
+
+  --popover:             oklch(1 0 0);
+  --popover-foreground:  oklch(0.16 0.018 258);
+
+  --primary:             oklch(0.46 0.13 268);
+  --primary-foreground:  oklch(0.98 0.004 250);
+
+  --secondary:           oklch(0.96 0.007 255);
+  --secondary-foreground:oklch(0.30 0.018 258);
+
+  --muted:               oklch(0.96 0.007 255);
+  --muted-foreground:    oklch(0.52 0.016 258);
+
+  --accent:              oklch(0.93 0.015 268);
+  --accent-foreground:   oklch(0.28 0.018 258);
+
+  --destructive:         oklch(0.55 0.18 28);
+  --destructive-foreground:oklch(0.98 0.004 250);
+
+  --border:              oklch(0.90 0.008 255);
+  --input:               oklch(0.90 0.008 255);
+  --ring:                oklch(0.46 0.13 268);
+
+  /* Charts — muted, calm, one violet accent */
+  --chart-1: oklch(0.50 0.12 268);   /* muted violet  */
+  --chart-2: oklch(0.55 0.09 210);   /* muted slate   */
+  --chart-3: oklch(0.57 0.10 160);   /* muted sage    */
+  --chart-4: oklch(0.62 0.09 62);    /* muted amber   */
+  --chart-5: oklch(0.53 0.12 22);    /* muted rose    */
+
+  --score-high: oklch(0.54 0.10 155);
+  --score-mid:  oklch(0.60 0.09 70);
+  --score-low:  oklch(0.52 0.12 22);
+
+  /* Light shadows — soft lift, no neumorphism gimmicks */
+  --shadow-card:
+    0 1px 2px rgba(0,0,0,0.04),
+    0 3px 10px rgba(0,0,0,0.06),
+    0 0 0 1px rgba(0,0,0,0.03);
+
+  --shadow-card-hover:
+    0 4px 12px rgba(0,0,0,0.08),
+    0 12px 32px rgba(0,0,0,0.10),
+    0 0 0 1px rgba(0,0,0,0.04);
+
+  --shadow-card-active:
+    inset 0 1px 0 rgba(255,255,255,0.9),
+    0 8px 24px rgba(0,0,0,0.14),
+    0 2px 6px rgba(0,0,0,0.08);
+
+  /* Inset / debossed (sliders, inputs) */
+  --shadow-inset:
+    inset 0 2px 6px rgba(0,0,0,0.08),
+    inset 0 1px 2px rgba(0,0,0,0.05);
 }
 
+/* ─── DARK — softer charcoal + elevated surfaces ────────────────────────── */
+.dark {
+  --background:          oklch(0.088 0.007 260);  /* slightly lifted from #0B0C0E */
+  --foreground:          oklch(0.93 0.006 250);
+
+  --card:                oklch(0.148 0.011 260);  /* softer than #16171B */
+  --card-foreground:     oklch(0.94 0.006 250);
+
+  --popover:             oklch(0.125 0.011 260);
+  --popover-foreground:  oklch(0.94 0.006 250);
+
+  --primary:             oklch(0.68 0.12 268);
+  --primary-foreground:  oklch(0.075 0.007 260);
+
+  --secondary:           oklch(0.19 0.014 260);
+  --secondary-foreground:oklch(0.90 0.006 250);
+
+  --muted:               oklch(0.19 0.014 260);
+  --muted-foreground:    oklch(0.57 0.012 258);
+
+  --accent:              oklch(0.23 0.022 268);
+  --accent-foreground:   oklch(0.94 0.006 250);
+
+  --destructive:         oklch(0.62 0.16 22);
+  --destructive-foreground:oklch(0.075 0.007 260);
+
+  --border:              oklch(1 0 0 / 0.07);
+  --input:               oklch(1 0 0 / 0.09);
+  --ring:                oklch(0.68 0.12 268);
+
+  --chart-1: oklch(0.68 0.13 268);
+  --chart-2: oklch(0.65 0.10 210);
+  --chart-3: oklch(0.64 0.10 155);
+  --chart-4: oklch(0.70 0.09 70);
+  --chart-5: oklch(0.63 0.14 22);
+
+  --score-high: oklch(0.62 0.10 155);
+  --score-mid:  oklch(0.67 0.09 70);
+  --score-low:  oklch(0.62 0.14 22);
+
+  /*
+   * Dark shadows — inner white highlight creates the "raised soft-plastic"
+   * tactile illusion. Outer ambient shadow separates from the #0B0C0E canvas.
+   */
+  --shadow-card:
+    inset 0 1px 0 rgba(255,255,255,0.07),
+    0 0 0 1px rgba(255,255,255,0.05),
+    0 4px 14px rgba(0,0,0,0.35),
+    0 12px 36px rgba(0,0,0,0.45);
+
+  --shadow-card-hover:
+    inset 0 1px 0 rgba(255,255,255,0.09),
+    0 0 0 1px rgba(255,255,255,0.06),
+    0 8px 24px rgba(0,0,0,0.45),
+    0 20px 56px rgba(0,0,0,0.60);
+
+  --shadow-card-active:
+    inset 0 1px 0 rgba(255,255,255,0.10),
+    0 0 0 1px rgba(255,255,255,0.06),
+    0 10px 30px rgba(0,0,0,0.55),
+    0 28px 80px rgba(0,0,0,0.70);
+
+  --shadow-inset:
+    inset 0 2px 10px rgba(0,0,0,0.55),
+    inset 0 1px 3px rgba(0,0,0,0.4),
+    inset 0 0 0 1px rgba(0,0,0,0.3);
+}
+
+/* ─── THEME TOKENS ────────────────────────────────────────────────────────── */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --radius-sm:  calc(var(--radius) - 6px);   /* 10 */
+  --radius-md:  calc(var(--radius) - 4px);   /* 12 */
+  --radius-lg:  var(--radius);               /* 16 */
+  --radius-xl:  calc(var(--radius) + 4px);   /* 20 */
+  --radius-2xl: calc(var(--radius) + 8px);   /* 24 */
+
+  --color-background:          var(--background);
+  --color-foreground:          var(--foreground);
+  --color-card:                var(--card);
+  --color-card-foreground:     var(--card-foreground);
+  --color-popover:             var(--popover);
+  --color-popover-foreground:  var(--popover-foreground);
+  --color-primary:             var(--primary);
+  --color-primary-foreground:  var(--primary-foreground);
+  --color-secondary:           var(--secondary);
+  --color-secondary-foreground:var(--secondary-foreground);
+  --color-muted:               var(--muted);
+  --color-muted-foreground:    var(--muted-foreground);
+  --color-accent:              var(--accent);
+  --color-accent-foreground:   var(--accent-foreground);
+  --color-destructive:         var(--destructive);
+  --color-destructive-foreground:var(--destructive-foreground);
+  --color-border:              var(--border);
+  --color-input:               var(--input);
+  --color-ring:                var(--ring);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --font-sans: var(--font-heebo), ui-sans-serif, system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ─── BASE ───────────────────────────────────────────────────────────────── */
+@layer base {
+  * { border-color: var(--border); }
+
+  html { color-scheme: light; }
+  html.dark { color-scheme: dark; }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    /* Subtle atmospheric radial glow anchored top-center */
+    background-image: radial-gradient(
+      ellipse 80% 50% at 50% -10%,
+      color-mix(in oklch, var(--primary) 7%, transparent),
+      transparent 70%
+    );
+    background-attachment: fixed;
+    min-height: 100dvh;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ─── UTILITIES ──────────────────────────────────────────────────────────── */
+
+@utility card-shadow        { box-shadow: var(--shadow-card); }
+@utility card-shadow-hover  { box-shadow: var(--shadow-card-hover); }
+@utility card-shadow-active { box-shadow: var(--shadow-card-active); }
+@utility inset-shadow       { box-shadow: var(--shadow-inset); }
+
+/*
+ * glass — architectural frosted pane.
+ * backdrop-blur-xl (24 px) + inner-white highlight + hairline border.
+ * Works as both tooltip and overlay surface.
+ */
+@utility glass {
+  background-color: color-mix(in oklch, var(--card) 70%, transparent);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid color-mix(in oklch, var(--border) 55%, transparent);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.09),
+    0 12px 40px rgba(0,0,0,0.20),
+    0 4px 12px rgba(0,0,0,0.12);
 }
+
+/* ─── LOADING ANIMATION KEYFRAMES ────────────────────────────────────────── */
+
+/*
+ * ship-fly: ship moves through 5 waypoints on the zigzag chart path.
+ * Waypoints (in 240×240 SVG): P0(32,205) → P1(165,158) → P2(58,112) → P3(170,65) → P4(108,18)
+ * Rotation: +26° going right-up, -26° going left-up, 0° exiting top.
+ */
+@keyframes ship-fly {
+  0%   { transform: translate(32px, 205px) rotate(26deg);  opacity: 0; }
+  6%   { transform: translate(32px, 205px) rotate(26deg);  opacity: 1; }
+  30%  { transform: translate(165px, 158px) rotate(-26deg); opacity: 1; }
+  55%  { transform: translate(58px, 112px) rotate(26deg);   opacity: 1; }
+  78%  { transform: translate(170px, 65px) rotate(-12deg);  opacity: 1; }
+  90%  { transform: translate(108px, 18px) rotate(0deg);    opacity: 1; }
+  97%  { transform: translate(108px, 18px) rotate(0deg);    opacity: 0; }
+  100% { transform: translate(108px, 18px) rotate(0deg);    opacity: 0; }
+}
+
+/* draw-chart: stroke-dashoffset 460→0 synchronized with ship-fly */
+@keyframes draw-chart {
+  0%   { stroke-dashoffset: 460; opacity: 0; }
+  6%   { stroke-dashoffset: 460; opacity: 1; }
+  90%  { stroke-dashoffset: 0;   opacity: 1; }
+  97%  { stroke-dashoffset: 0;   opacity: 0; }
+  100% { stroke-dashoffset: 460; opacity: 0; }
+}
+
+/* waypoint-dot-N: each chart node fades in as ship passes */
+@keyframes dot-appear {
+  0%, 5%   { opacity: 0; transform: scale(0); }
+  10%      { opacity: 1; transform: scale(1.4); }
+  20%      { transform: scale(1); }
+  90%      { opacity: 1; }
+  97%      { opacity: 0; }
+  100%     { opacity: 0; }
+}
+
+@keyframes engine-pulse {
+  0%, 100% { opacity: 0.55; transform: scaleY(1)   scaleX(1); }
+  50%      { opacity: 1;    transform: scaleY(1.45) scaleX(1.25); }
+}
+
+@keyframes loading-dot {
+  0%, 80%, 100% { opacity: 0.25; transform: scale(0.75); }
+  40%           { opacity: 1;    transform: scale(1); }
+}
+
+@keyframes star-twinkle {
+  0%, 100% { opacity: 0.12; }
+  50%      { opacity: 0.75; }
+}
+
+@keyframes fade-slide-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Accessibility: skip-to-content ─────────────────────────────────── */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  inset-inline-start: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  padding: 0.5rem 1.375rem;
+  border-radius: 0 0 0.875rem 0.875rem;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: top 0.15s ease;
+}
+.skip-link:focus {
+  top: 0;
+  outline: 3px solid var(--ring);
+  outline-offset: 2px;
+}
+
